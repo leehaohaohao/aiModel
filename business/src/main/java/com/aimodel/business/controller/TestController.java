@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
+import org.springframework.web.bind.annotation.Mapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,7 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * classname
+ * 测试controller
  *
  * @author lihao
  * &#064;date  2024/9/26--20:26
@@ -47,7 +49,7 @@ public class TestController {
             throw new RuntimeException(e);
         }
     }
-    @RequestMapping("/test")
+    @PostMapping("/test")
     public ResponsePack test(){
         //TODO 修改bug
         log.info("调用接口：");

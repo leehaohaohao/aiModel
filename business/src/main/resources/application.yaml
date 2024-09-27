@@ -1,2 +1,5 @@
 server:
   port: 8001
+spring:
+  jackson:
+    default-property-inclusion: non_null

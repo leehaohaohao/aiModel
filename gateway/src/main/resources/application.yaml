@@ -3,6 +3,15 @@ server:
 python:
   host: localhost
   port: 8001
+rpc:
+  connect-timeout: 10
+  read-timeout: 30
+  write-timeout: 10
+  max-idle-connections: 5
+  keep-alive-duration: 5
 spring:
   jackson:
     default-property-inclusion: non_null
+logging:
+  level:
+    root: debug

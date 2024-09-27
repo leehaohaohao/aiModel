@@ -4,10 +4,11 @@ import com.aiModel.entity.constants.ExceptionConstants;
 import com.aiModel.entity.dto.ResponsePack;
 import com.aiModel.entity.map.CacheMap;
 import com.aiModel.gateway.config.GateWayConfig;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
-import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -20,19 +21,23 @@ import java.util.Map;
  * &#064;date  2024/9/26--16:50
  * @since 1.0
  */
+@Slf4j
 public class ForwardService {
-    private final OkHttpClient client = new OkHttpClient();
-    private final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+    static {
+        MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    }
     @SuppressWarnings("unchecked")
-    public ResponsePack forward(String path,Map<String, String> headers,
-                                String body,Map<String,String> params){
+    public JsonNode forward(String path, Map<String, String> headers,
+                            String body, Map<String,String> params){
         try{
+            OkHttpClient client = OkClientPool.getClient();
             HashSet<String> python = (HashSet<String>) CacheMap.pythonMap.get("python");
             if(python ==null){
                 python = new HashSet<>();
             }
             if(!python.contains(path)){
-                return ResponsePack.fail(ExceptionConstants.SERVICE_NOT_FOUND);
+                return buildJsonNode(ResponsePack.fail(ExceptionConstants.SERVER_ERROR));
             }
             // 拼接url
             StringBuilder targetUrl = new StringBuilder(GateWayConfig.getPythonUrl() + path);
@@ -54,15 +59,22 @@ public class ForwardService {
             try(Response response = client.newCall(request).execute()){
                 if(response.isSuccessful()){
                     if (response.body() != null) {
-                        return mapper.convertValue(response.body(), ResponsePack.class);
+                        String responseBody = response.body().string();
+                        if (responseBody.isEmpty()) {
+                            return buildJsonNode(ResponsePack.success(null));
+                        }
+                        return MAPPER.readTree(responseBody);
                     }
-                    return ResponsePack.success(null);
-                }else {
-                    return ResponsePack.fail(response.code(),response.message());
+                    return buildJsonNode(ResponsePack.success(null));
                 }
+                return buildJsonNode(ResponsePack.fail(null,response.code(),response.message()));
             }
         }catch (IOException e) {
-            return ResponsePack.fail(ExceptionConstants.SERVER_ERROR);
+            log.error("转发服务异常",e);
+            return buildJsonNode(ResponsePack.fail(ExceptionConstants.SERVER_ERROR));
         }
+    }
+    private JsonNode buildJsonNode(ResponsePack responsePack){
+        return MAPPER.convertValue(responsePack, JsonNode.class);
     }
 }

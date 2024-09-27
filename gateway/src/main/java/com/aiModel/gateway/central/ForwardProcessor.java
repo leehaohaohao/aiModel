@@ -1,12 +1,10 @@
 package com.aiModel.gateway.central;
 
-import com.aiModel.entity.dto.ResponsePack;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.io.BufferedReader;
@@ -23,7 +21,6 @@ import java.util.Map;
  * &#064;date  2024/9/26--16:23
  * @since 1.0
  */
-@Component
 @Slf4j
 public class ForwardProcessor implements HandlerInterceptor {
     private final ForwardService forwardService = new ForwardService();
@@ -62,9 +59,9 @@ public class ForwardProcessor implements HandlerInterceptor {
             }
         }
         //转发请求
-        ResponsePack responsePack = forwardService.forward(uri,heads,content.toString(),params);
+        JsonNode jsonNode = forwardService.forward(uri,heads,content.toString(),params);
         response.setContentType("application/json; charset=UTF-8");
-        response.getWriter().write(mapper.writeValueAsString(responsePack));
+        response.getWriter().write(mapper.writeValueAsString(jsonNode));
         return false;
     }
     private boolean release(String uri){

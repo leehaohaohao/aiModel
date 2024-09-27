@@ -1,5 +1,6 @@
 package com.aiModel.entity.dto;
 
+import cn.hutool.core.util.StrUtil;
 import com.aiModel.entity.enums.CodeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,15 +30,27 @@ public class ResponsePack<T> {
         return new ResponsePack<>(code, CodeEnum.SUCCESS.getMsg(),data,true);
     }
     public static <T> ResponsePack<T> success(T data, Integer code, String msg){
+        if(StrUtil.isBlank(msg)){
+            msg=null;
+        }
         return new ResponsePack<>(code, msg,data,true);
     }
     public static <T> ResponsePack<T> fail(Integer code, String msg){
+        if(StrUtil.isBlank(msg)){
+            msg=null;
+        }
         return new ResponsePack<>(code, msg,null,false);
     }
-    public static <T> ResponsePack<T> fail(Integer code, String msg, T data){
+    public static <T> ResponsePack<T> fail(T data,Integer code, String msg){
+        if(StrUtil.isBlank(msg)){
+            msg=null;
+        }
         return new ResponsePack<>(code, msg,data,false);
     }
     public static <T> ResponsePack<T> fail(String msg){
+        if(StrUtil.isBlank(msg)){
+            msg=null;
+        }
         return new ResponsePack<>(CodeEnum.FAIL.getCode(), msg,null,false);
     }
 }
