@@ -7,11 +7,10 @@
         <artifactId>AiModel</artifactId>
         <version>0.0.1</version>
     </parent>
-    <artifactId>gateway</artifactId>
+    <artifactId>business</artifactId>
     <version>0.0.1</version>
-    <name>gateway</name>
-    <description>gateway</description>
-    <url/>
+    <name>business</name>
+    <description>business</description>
     <properties>
         <java.version>17</java.version>
     </properties>
@@ -34,4 +33,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>

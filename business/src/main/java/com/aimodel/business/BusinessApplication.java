@@ -1,14 +1,13 @@
-package com.aiModel.gateway;
+package com.aimodel.business;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-/**
- * @author lihao
- */
 @SpringBootApplication
-public class GatewayApplication {
+public class BusinessApplication {
+
     public static void main(String[] args) {
-        SpringApplication.run(GatewayApplication.class, args);
+        SpringApplication.run(BusinessApplication.class, args);
     }
+
 }
