@@ -5,12 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
-import org.springframework.web.bind.annotation.Mapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import okhttp3.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,9 +28,9 @@ public class TestController {
     @PostConstruct
     private void init(){
         try {
-            Set<String> test = new HashSet<>();
-            test.add("/test");
-            test.add("/test2");
+            HashMap<String, String> test = new HashMap<>();
+            test.put("/test","http://localhost:8001");
+            test.put("/test2","http://localhost:8001");
             RequestBody requestBody = RequestBody.create(mapper.writeValueAsString(test), MediaType.parse("application/json"));
             log.info("请求体为：{}", requestBody);
             Request request = new Request.Builder()
@@ -49,9 +48,8 @@ public class TestController {
             throw new RuntimeException(e);
         }
     }
-    @PostMapping("/test")
+    @GetMapping("/test")
     public ResponsePack test(){
-        //TODO 修改bug
         log.info("调用接口：");
         return ResponsePack.success("test");
     }

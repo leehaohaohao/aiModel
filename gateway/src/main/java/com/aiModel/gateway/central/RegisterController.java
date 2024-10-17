@@ -30,15 +30,15 @@ public class RegisterController {
      * @return
      */
     @RequestMapping("/register")
-    public ResponsePack register(@RequestBody Set<String> serviceInfo)
+    public ResponsePack register(@RequestBody HashMap<String,String> serviceInfo)
     {
         log.info("接收到注册信息:{}",serviceInfo);
-        HashSet<String> python =(HashSet<String>)CacheMap.pythonMap.get("python");
-        if(python==null){
-            python = new HashSet<>();
-            CacheMap.pythonMap.put("python",python);
+        HashMap<String,String> python = CacheMap.pythonMap;
+        if(python == null){
+            python = new HashMap<>();
+            CacheMap.pythonMap = python;
         }
-        python.addAll(serviceInfo);
+        python.putAll(serviceInfo);
 
         return ResponsePack.success(null);
     }

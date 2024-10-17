@@ -27,11 +27,13 @@ public class ForwardProcessor implements HandlerInterceptor {
     private final ObjectMapper mapper = new ObjectMapper();
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        long start = System.currentTimeMillis();
         String uri = request.getRequestURI();
-        log.info("要求转发的uri:{}",uri);
+        log.debug("rpc==要求转发的uri=={}",uri);
         if(release(uri)){
             return true;
         }
+        //TODO 限流
         Map<String,String> heads = new HashMap<>();
         Map<String,String> params = new HashMap<>();
         Enumeration<String> headerNames = request.getHeaderNames();
@@ -58,10 +60,17 @@ public class ForwardProcessor implements HandlerInterceptor {
                 content.append(line);
             }
         }
+        // 获取请求方式
+        String method = request.getMethod();
+        // 获取请求类型
+        String contentType = request.getContentType();
         //转发请求
-        JsonNode jsonNode = forwardService.forward(uri,heads,content.toString(),params);
+        //TODO 容错、重试、降级
+        JsonNode jsonNode = forwardService.forward(uri,heads,content.toString(),params,method,contentType);
         response.setContentType("application/json; charset=UTF-8");
         response.getWriter().write(mapper.writeValueAsString(jsonNode));
+        long end = System.currentTimeMillis();
+        log.debug("转发请求耗时=={}ms",end-start);
         return false;
     }
     private boolean release(String uri){

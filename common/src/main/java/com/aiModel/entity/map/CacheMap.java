@@ -13,5 +13,5 @@ import java.util.concurrent.ConcurrentHashMap;
  * @since 1.0
  */
 public class CacheMap {
-    public static Map<String,Object> pythonMap = new HashMap<>();
+    public static HashMap<String,String> pythonMap = new HashMap<>();
 }
