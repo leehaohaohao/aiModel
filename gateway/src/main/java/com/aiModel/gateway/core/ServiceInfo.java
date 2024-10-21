@@ -1,4 +1,4 @@
-package com.aiModel.gateway.central;
+package com.aiModel.gateway.core;
 
 import lombok.Data;
 

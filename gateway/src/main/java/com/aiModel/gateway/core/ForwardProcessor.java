@@ -1,5 +1,9 @@
-package com.aiModel.gateway.central;
+package com.aiModel.gateway.core;
 
+import com.aiModel.entity.dto.ResponsePack;
+import com.aiModel.entity.enums.CodeEnum;
+import com.aiModel.gateway.fault.retry.RetryStrategy;
+import com.aiModel.gateway.fault.retry.RetryStrategyFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,6 +37,7 @@ public class ForwardProcessor implements HandlerInterceptor {
         if(release(uri)){
             return true;
         }
+        response.setContentType("application/json; charset=UTF-8");
         //TODO 限流
         Map<String,String> heads = new HashMap<>();
         Map<String,String> params = new HashMap<>();
@@ -65,14 +70,31 @@ public class ForwardProcessor implements HandlerInterceptor {
         // 获取请求类型
         String contentType = request.getContentType();
         //转发请求
-        //TODO 容错、重试、降级
-        JsonNode jsonNode = forwardService.forward(uri,heads,content.toString(),params,method,contentType);
-        response.setContentType("application/json; charset=UTF-8");
+        //TODO 容错、降级
+        JsonNode jsonNode;
+        try{
+            //重试机制 重试短时间内最多重试3次
+            RetryStrategy retryStrategy = RetryStrategyFactory.getRetryStrategy();
+            jsonNode = retryStrategy.doRetry(
+                    ()->forwardService.forward(uri,heads,content.toString(),params,method,contentType)
+            );
+        }catch (Exception e){
+            log.error("转发请求异常=={}",e.getMessage());
+            ResponsePack<String> fail = ResponsePack.fail(e.getMessage());
+            response.getWriter().write(mapper.writeValueAsString(fail));
+            return false;
+        }
         response.getWriter().write(mapper.writeValueAsString(jsonNode));
         long end = System.currentTimeMillis();
         log.debug("转发请求耗时=={}ms",end-start);
         return false;
     }
+
+    /**
+     * 需要直接放行的接口
+     * @param uri
+     * @return
+     */
     private boolean release(String uri){
         if ("/register".equals(uri)) {
             return true;

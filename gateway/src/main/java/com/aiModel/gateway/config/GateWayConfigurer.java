@@ -1,8 +1,6 @@
 package com.aiModel.gateway.config;
 
-import com.aiModel.gateway.central.ForwardProcessor;
-import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Value;
+import com.aiModel.gateway.core.ForwardProcessor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;

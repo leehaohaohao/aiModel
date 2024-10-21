@@ -1,4 +1,4 @@
-package com.aiModel.gateway.central;
+package com.aiModel.gateway.core;
 
 import okhttp3.ConnectionPool;
 import okhttp3.OkHttpClient;
